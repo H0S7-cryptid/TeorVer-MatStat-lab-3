@@ -26,15 +26,12 @@ namespace ЛАБА_ТВИМС__1
         private int initNumOfValuesReg = 0;
         private int initNumOfValuesNorm = 0;
         private int initNumOfValuesLinVal = 0;
-        /*private int initNumOfValuesLinBar = 0;
-        private int initNumOfBars = 0;*/
         private double[] regularDistrib;
         private double[] normalDistrib;
         double[] sample;
         double[] sample_Dist;
         double[] xi;
         double[] counts;
-        double initSampleVar = 0, initgroupedMedian = 0, initOrderedMedian = 0, initModeSimple = 0, initModeAdjusted = 0, initAvg = 0;
         double sampleVar, groupedMedian, orderedMedian, modeSimple, modeAdjusted, avg;
 
         private void button1_Click(object sender, EventArgs e)
