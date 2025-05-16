@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace ЛАБА_ТВИМС__1
             InitializeComponent();
             chartForHitogramms.ChartAreas[0].AxisX.LabelStyle.Format = "F2";
         }
+        Random rand = new Random();
 
         private double Max;
         private double Min;
@@ -28,8 +30,9 @@ namespace ЛАБА_ТВИМС__1
         private int initNumOfValuesLinVal = 0;
         private double[] regularDistrib;
         private double[] normalDistrib;
+        double[] Yvalue;
+        double[] Xvalue;
         double[] sample;
-        double[] sample_Dist;
         double[] xi;
         double[] counts;
         double sampleVar, groupedMedian, orderedMedian, modeSimple, modeAdjusted, avg;
@@ -76,10 +79,10 @@ namespace ЛАБА_ТВИМС__1
             xi = CreateBordersForLin(numOfBars);
             sample = CreateSampleForLin(numOfvalues, numOfBars);
             counts = CreateChecksBetweenBorders(numOfBars, sample, xi);
-            sampleVar = ComputeSampleVariance(numOfvalues);
+            sampleVar = ComputeSampleVariance();
             groupedMedian = ComputeGroupedMedian(numOfvalues, numOfBars);
-            orderedMedian = ComputeOrderedMedian(sample_Dist);
-            var modes = ComputeModes(xi, counts);
+            orderedMedian = ComputeOrderedMedian();
+            var modes = ComputeModes();
             modeSimple = modes.modeSimple;
             modeAdjusted = modes.modeAdjusted;
             avg = sample.Average();
@@ -88,8 +91,9 @@ namespace ЛАБА_ТВИМС__1
         {
             chartForHitogramms.Series[0].Points.Clear();
 
-            int numOfvalues = (int)this.numericUpDown1.Value;
-            int numOfBars = (int)this.numericUpDown2.Value;
+            int numOfvalues = (int)numericUpDown1.Value;
+            int numOfBars = (int)numericUpDown2.Value;
+            int numOfBarsForHist = (int)numericUpDown3.Value;
 
             int numVFS = initNumOfValuesLinVal;
 
@@ -100,30 +104,18 @@ namespace ЛАБА_ТВИМС__1
 
             counts = CreateChecksBetweenBorders(numOfBars, sample, xi);
 
-            if (numVFS != numOfvalues)
-            {
-                // Расчёт характеристик:
-                // 1. Дисперсия:
-                sampleVar = ComputeSampleVariance(numOfvalues);
-                // 2. Медиана:
-                groupedMedian = ComputeGroupedMedian(numOfvalues, numOfBars);
-                orderedMedian = ComputeOrderedMedian(sample_Dist);
-                // 3. Мода:
-                var modes = ComputeModes(xi, counts);
-                modeSimple = modes.modeSimple;
-                modeAdjusted = modes.modeAdjusted;
-                // 4. Среднее значение выборки:
-                avg = sample.Average();
-            }
+            ShowChart(sample, numOfvalues, numOfBarsForHist);
 
-            for (int i = 0; i < numOfBars; i++)
-            {
-                double binWidth = xi[i + 1] - xi[i];
-                double height = Math.Round((counts[i] / (binWidth * (double)numOfvalues)) / 1.5, 2); // плотность!
-                chartForHitogramms.Series[0].Points.AddXY($"{Math.Round(xi[i], 2)} - {Math.Round(xi[i + 1], 2)}", height);
-            }
+            numVFS = initNumOfValuesLinVal;
+            // Расчёт характеристик:
+            sampleVar = ComputeSampleVariance();
+            groupedMedian = ComputeGroupedMedian(numOfvalues, numOfBars);
+            orderedMedian = ComputeOrderedMedian();
+            var modes = ComputeModes();
+            modeSimple = modes.modeSimple;
+            modeAdjusted = modes.modeAdjusted;
+            avg = sample.Average();
 
-            // Запись расчитанных данных
             string result =
                 "Результаты оценки распределения:\n\n" +
                 $"1. Дисперсия:\n" +
@@ -144,35 +136,41 @@ namespace ЛАБА_ТВИМС__1
             xi = new double[numOfBars + 1];
             for (int i = 0; i <= numOfBars; i++)
                 xi[i] = 2 * Math.Sqrt((double)i / numOfBars); // xi = 2√(i/n)
-
             return xi;
         }
         private double[] CreateSampleForLin(int numOfvalues, int numOfBars)
         {
-            Random rand = new Random();
+            double[] sample_h = new double[numOfvalues];
+            double Pi = 1 / (double)numOfBars;
 
-            double[] sample = new double[numOfvalues];
-
-            int idx = 0, idx_1 = 0;
-
-            while (idx < numOfvalues)
+            for (int i = 0; i < numOfvalues; i++)
             {
-                double x = 2 * rand.NextDouble();
-                double y = rand.NextDouble();
-                if (y <= (Math.Pow(x, 2) / 4))
-                {
-                    sample[idx] = x;
-                    idx++;
-                }
+                double x = GetX(Pi, xi);
+                sample_h[i] = x;
             }
-            Array.Sort(sample);
+            Array.Sort(sample_h);
 
-            return sample;
+            return sample_h;
+        }
+        private double GetX(double Pi, double[] xi)
+        {
+            int idx = 1;
+            double r = rand.NextDouble();
+
+            while (true)
+            {
+                if (r < Pi) break;
+                r = r - Pi;
+                idx++;
+            }
+
+            double r2 = rand.NextDouble();
+            double x = xi[idx - 1] + r2 * (xi[idx] - xi[idx - 1]);
+            return x;
         }
         private double[] CreateChecksBetweenBorders(int numOfBars, double[] sample, double[] xi)
         {
             double[] counts = new double[numOfBars];
-            // Шаг 3: Подсчёт количества элементов в интервалах
             foreach (double x in sample)
             {
                 for (int i = 0; i < numOfBars; i++)
@@ -187,86 +185,62 @@ namespace ЛАБА_ТВИМС__1
 
             return counts;
         }
-        private double ComputeSampleMean(int numOfvalues)
+        private double ComputeSampleVariance()
         {
-            Random rand = new Random();
-
-            sample_Dist = null;
-
-            sample_Dist = new double[numOfvalues];
-
-            int idx = 0;
-
-            while (idx < numOfvalues)
-            {
-                double x = 2 * rand.NextDouble();
-                double y = rand.NextDouble();
-                if (y <= 0.5 * x)
-                {
-                    sample_Dist[idx] = x;
-                    idx++;
-                }
-            }
-
-            return sample_Dist.Average();
-        }
-        private double ComputeSampleVariance(int numOfvalues)
-        {
-            double mean = ComputeSampleMean(numOfvalues);
-            double variance = sample_Dist.Select(x => (x - mean) * (x - mean)).Sum() / sample_Dist.Length;
+            double mean = sample.Average();
+            double sum = 0;
+            for (int i = 0; i < sample.Length; i++)
+                sum += Math.Pow(sample[i] - mean, 2);
+            double variance = (1 / (double)(sample.Length - 1) * sum);
             return variance;
         }
         private double ComputeGroupedMedian(int numValues, int numOfBars)
         {
-            double[] countsMedian = CreateChecksBetweenBorders(numOfBars, sample_Dist, xi);
-            int bars = countsMedian.Length;
+            int bars = counts.Length;
             double cumulative = 0.0;
             for (int i = 0; i < bars; i++)
             {
                 double prevCumulative = cumulative;
-                cumulative += countsMedian[i];
+                cumulative += counts[i];
                 if (cumulative >= numValues / 2.0)
                 {
                     double L = xi[i];
                     double h = xi[i + 1] - xi[i];
-                    double median = L + ((numValues / 2.0 - prevCumulative) / countsMedian[i]) * h;
+                    double median = L + ((numValues / 2.0 - prevCumulative) / counts[i]) * h;
                     return median;
                 }
             }
             return -1; // Если не найдено (теоретически здесь не должно быть)
         }
-        private double ComputeOrderedMedian(double[] sample)
+        private double ComputeOrderedMedian()
         {
-            double[] sample2 = sample;
-            Array.Sort(sample2);
-            int n = sample2.Length;
+            int n = sample.Length;
             if (n % 2 == 1)
-                return sample2[n / 2];
+                return sample[n / 2];
             else
-                return (sample2[n / 2 - 1] + sample2[n / 2]) / 2.0;
+                return (sample[n / 2 - 1] + sample[n / 2]) / 2.0;
         }
-        private (double modeSimple, double modeAdjusted) ComputeModes(double[] xi, double[] counts)
+        private (double modeSimple, double modeAdjusted) ComputeModes()
         {
-            int bars = counts.Length;
+            int bars = Yvalue.Length;
             int modalIndex = 0;
-            double maxCount = counts[0];
+            double maxCount = Yvalue[0];
             for (int i = 1; i < bars; i++)
             {
-                if (counts[i] > maxCount)
+                if (Yvalue[i] > maxCount)
                 {
-                    maxCount = counts[i];
+                    maxCount = Yvalue[i];
                     modalIndex = i;
                 }
             }
-            double L = xi[modalIndex];
-            double h = xi[modalIndex + 1] - xi[modalIndex];
-            // 1. Простая оценка – середина модального интервала:
-            double modeSimple = (xi[modalIndex] + xi[modalIndex + 1]) / 2.0;
+            double modeSimple = (Xvalue[modalIndex] + (modalIndex != bars - 1 ? Xvalue[modalIndex + 1] : 2)) / 2.0;
 
-            // 2. Корректировка (формула с поправкой на соседние интервалы)
-            double f_m = counts[modalIndex];
-            double f_prev = modalIndex == 0 ? 0 : counts[modalIndex - 1];
-            double f_next = modalIndex == bars - 1 ? 0 : counts[modalIndex + 1];
+            double L = Xvalue[modalIndex];
+            double h = (modalIndex != bars - 1 ? Xvalue[modalIndex + 1] : 2) - Xvalue[modalIndex];
+
+            double f_m = Yvalue[modalIndex];
+            double f_prev = modalIndex == 0 ? 0 : Yvalue[modalIndex - 1];
+            double f_next = modalIndex == bars - 1 ? 0 : Yvalue[modalIndex + 1];
             double denominator = (f_m - f_prev) + (f_m - f_next);
             double modeAdjusted = denominator == 0 ? modeSimple : L + ((f_m - f_prev) / denominator) * h;
             return (modeSimple, modeAdjusted);
@@ -335,9 +309,10 @@ namespace ЛАБА_ТВИМС__1
             Max = massive[numOfvalues - 1];
 
             double step = (Max - Min) / numOfBars;
-            double Xvalue = 0;
+            double cur_Step = 0;
 
-            double[] Yvalue = new double[numOfBars];
+            Yvalue = new double[numOfBars];
+            Xvalue = new double[numOfBars];
 
             int idx = 0;
 
@@ -360,8 +335,11 @@ namespace ЛАБА_ТВИМС__1
 
             for (int i = 0; i < numOfBars; i++)
             {
-                Xvalue += step;
-                chartForHitogramms.Series[0].Points.AddXY($"{Xvalue} - {Xvalue + step}", Yvalue[i]);
+                cur_Step += i == 0 ? 0 : step;
+                Xvalue[i] = cur_Step;
+                double lowVal = Math.Round(cur_Step, 2);
+                double highVal = Math.Round(cur_Step + step, 2);
+                chartForHitogramms.Series[0].Points.AddXY($"{lowVal} - {highVal}", Yvalue[i]);
             }
         }
     }
