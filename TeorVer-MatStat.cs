@@ -21,6 +21,7 @@ namespace ЛАБА_ТВИМС__1
             InitializeComponent();
             chartForHitogramms.ChartAreas[0].AxisX.LabelStyle.Format = "F2";
         }
+
         Random rand = new Random();
 
         private double Max;
@@ -34,7 +35,6 @@ namespace ЛАБА_ТВИМС__1
         double[] Xvalue;
         double[] sample;
         double[] xi;
-        double[] counts;
         double sampleVar, groupedMedian, orderedMedian, modeSimple, modeAdjusted, avg;
 
         private void button1_Click(object sender, EventArgs e)
@@ -74,11 +74,9 @@ namespace ЛАБА_ТВИМС__1
 
             sample = null;
             xi = null;
-            counts = null;
 
             xi = CreateBordersForLin(numOfBars);
             sample = CreateSampleForLin(numOfvalues, numOfBars);
-            counts = CreateChecksBetweenBorders(numOfBars, sample, xi);
             sampleVar = ComputeSampleVariance();
             groupedMedian = ComputeGroupedMedian(numOfvalues, numOfBars);
             orderedMedian = ComputeOrderedMedian();
@@ -102,12 +100,10 @@ namespace ЛАБА_ТВИМС__1
             if (CheckForNewParametersLin(numOfvalues))
                 sample = CreateSampleForLin(numOfvalues, numOfBars);
 
-            counts = CreateChecksBetweenBorders(numOfBars, sample, xi);
-
             ShowChart(sample, numOfvalues, numOfBarsForHist);
 
             numVFS = initNumOfValuesLinVal;
-            // Расчёт характеристик:
+
             sampleVar = ComputeSampleVariance();
             groupedMedian = ComputeGroupedMedian(numOfvalues, numOfBars);
             orderedMedian = ComputeOrderedMedian();
@@ -168,23 +164,6 @@ namespace ЛАБА_ТВИМС__1
             double x = xi[idx - 1] + r2 * (xi[idx] - xi[idx - 1]);
             return x;
         }
-        private double[] CreateChecksBetweenBorders(int numOfBars, double[] sample, double[] xi)
-        {
-            double[] counts = new double[numOfBars];
-            foreach (double x in sample)
-            {
-                for (int i = 0; i < numOfBars; i++)
-                {
-                    if (x >= xi[i] && (i == numOfBars - 1 ? x <= xi[i + 1] : x < xi[i + 1]))
-                    {
-                        counts[i]++;
-                        break;
-                    }
-                }
-            }
-
-            return counts;
-        }
         private double ComputeSampleVariance()
         {
             double mean = sample.Average();
@@ -196,21 +175,23 @@ namespace ЛАБА_ТВИМС__1
         }
         private double ComputeGroupedMedian(int numValues, int numOfBars)
         {
-            int bars = counts.Length;
+            int bars = Yvalue.Length;
             double cumulative = 0.0;
             for (int i = 0; i < bars; i++)
             {
                 double prevCumulative = cumulative;
-                cumulative += counts[i];
-                if (cumulative >= numValues / 2.0)
+                double width = i != bars - 1 ? Xvalue[i + 1] - Xvalue[i] : 2 - Xvalue[i];
+
+                cumulative += Yvalue[i] * width;
+                if (cumulative >= 0.5)
                 {
-                    double L = xi[i];
-                    double h = xi[i + 1] - xi[i];
-                    double median = L + ((numValues / 2.0 - prevCumulative) / counts[i]) * h;
+                    double L = Xvalue[i];  
+                    double h = width;      
+                    double median = L + ((0.5 - prevCumulative) / Yvalue[i]) * h;
                     return median;
                 }
             }
-            return -1; // Если не найдено (теоретически здесь не должно быть)
+            return -1; // На практике эта точка найдется, поэтому возвращение -1 означает ошибку.
         }
         private double ComputeOrderedMedian()
         {
