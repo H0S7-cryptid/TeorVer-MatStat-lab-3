@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Reflection.Emit;
 using System.Windows.Forms;
 
 namespace ЛАБА_ТВИМС__1
@@ -30,9 +32,9 @@ namespace ЛАБА_ТВИМС__1
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
@@ -46,9 +48,12 @@ namespace ЛАБА_ТВИМС__1
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartForHitogramms)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -56,7 +61,7 @@ namespace ЛАБА_ТВИМС__1
             this.button1.ForeColor = System.Drawing.Color.Black;
             this.button1.Location = new System.Drawing.Point(995, 12);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(347, 91);
+            this.button1.Size = new System.Drawing.Size(400, 91);
             this.button1.TabIndex = 0;
             this.button1.Text = "Создать гистограмму с равномерным распределением";
             this.button1.UseVisualStyleBackColor = true;
@@ -64,7 +69,7 @@ namespace ЛАБА_ТВИМС__1
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(999, 625);
+            this.numericUpDown1.Location = new System.Drawing.Point(1011, 628);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -86,7 +91,7 @@ namespace ЛАБА_ТВИМС__1
             // 
             // numericUpDown2
             // 
-            this.numericUpDown2.Location = new System.Drawing.Point(999, 678);
+            this.numericUpDown2.Location = new System.Drawing.Point(1011, 700);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -108,16 +113,16 @@ namespace ЛАБА_ТВИМС__1
             // 
             // chartForHitogramms
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chartForHitogramms.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chartForHitogramms.Legends.Add(legend2);
+            chartArea3.Name = "ChartArea1";
+            this.chartForHitogramms.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chartForHitogramms.Legends.Add(legend3);
             this.chartForHitogramms.Location = new System.Drawing.Point(12, 12);
             this.chartForHitogramms.Name = "chartForHitogramms";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartForHitogramms.Series.Add(series2);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartForHitogramms.Series.Add(series3);
             this.chartForHitogramms.Size = new System.Drawing.Size(977, 673);
             this.chartForHitogramms.TabIndex = 5;
             this.chartForHitogramms.Text = "chart1";
@@ -125,7 +130,7 @@ namespace ЛАБА_ТВИМС__1
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1057, 606);
+            this.label1.Location = new System.Drawing.Point(1012, 609);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(222, 16);
             this.label1.TabIndex = 6;
@@ -134,18 +139,18 @@ namespace ЛАБА_ТВИМС__1
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1082, 659);
+            this.label2.Location = new System.Drawing.Point(1008, 665);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(170, 16);
+            this.label2.Size = new System.Drawing.Size(278, 32);
             this.label2.TabIndex = 7;
-            this.label2.Text = "Количество интревалов:";
+            this.label2.Text = "Количество интревалов для вычисления \r\n(интервалы равновероятны):";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(999, 110);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(343, 85);
+            this.button2.Size = new System.Drawing.Size(396, 85);
             this.button2.TabIndex = 8;
             this.button2.Text = "Создать гистограмму с нормальным распределением";
             this.button2.UseVisualStyleBackColor = true;
@@ -153,7 +158,7 @@ namespace ЛАБА_ТВИМС__1
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(80, 732);
+            this.button3.Location = new System.Drawing.Point(12, 708);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(266, 86);
             this.button3.TabIndex = 9;
@@ -163,7 +168,7 @@ namespace ЛАБА_ТВИМС__1
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(415, 732);
+            this.button4.Location = new System.Drawing.Point(284, 708);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(250, 86);
             this.button4.TabIndex = 10;
@@ -173,9 +178,9 @@ namespace ЛАБА_ТВИМС__1
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(995, 752);
+            this.label3.Location = new System.Drawing.Point(750, 727);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(351, 40);
+            this.label3.Size = new System.Drawing.Size(208, 65);
             this.label3.TabIndex = 11;
             this.label3.Text = "При изменении количества элементов выборки сама выборка будет пересоздана!";
             // 
@@ -183,7 +188,7 @@ namespace ЛАБА_ТВИМС__1
             // 
             this.button5.Location = new System.Drawing.Point(999, 201);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(343, 115);
+            this.button5.Size = new System.Drawing.Size(396, 115);
             this.button5.TabIndex = 12;
             this.button5.Text = "Создать гистограмму с помощью метода ступенчатой аппроксимации с равновероятными " +
     "интревалами.\r\nf(x) = 0.5x на интервале [0 ; 2]";
@@ -192,7 +197,7 @@ namespace ЛАБА_ТВИМС__1
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(751, 732);
+            this.button6.Location = new System.Drawing.Point(540, 708);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(204, 86);
             this.button6.TabIndex = 13;
@@ -202,21 +207,58 @@ namespace ЛАБА_ТВИМС__1
             // 
             // label4
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(996, 338);
+            this.label4.Location = new System.Drawing.Point(1005, 319);
+            this.label4.MaximumSize = new System.Drawing.Size(400, 0);
             this.label4.Name = "label4";
             this.label4.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label4.Size = new System.Drawing.Size(432, 16);
+            this.label4.Size = new System.Drawing.Size(349, 16);
             this.label4.TabIndex = 14;
-            this.label4.Text = "\"Здесь будут данные по последнему методу распределения №3\"";
+            this.label4.Text = "\"Здесь будут данные по методу распределения №3\"\r\n";
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.Location = new System.Drawing.Point(1011, 768);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(351, 22);
+            this.numericUpDown3.TabIndex = 15;
+            this.numericUpDown3.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(1008, 733);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(273, 32);
+            this.label5.TabIndex = 16;
+            this.label5.Text = "Количество интервалов для построения\n гистограммы (все интервалы равны):";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1358, 830);
+            this.ClientSize = new System.Drawing.Size(1407, 830);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.numericUpDown3);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
@@ -235,8 +277,10 @@ namespace ЛАБА_ТВИМС__1
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartForHitogramms)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion
@@ -254,5 +298,8 @@ namespace ЛАБА_ТВИМС__1
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Label label4;
+        private NumericUpDown numericUpDown3;
+        private System.Windows.Forms.Label label5;
     }
 }
+
